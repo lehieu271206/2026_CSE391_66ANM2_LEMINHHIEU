@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Employee Form</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eee;
+    font-size: 14px;
+}
+
+form {
+    width: 720px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 190px;
+}
+
+fieldset {
+    border: 1px solid #aaa;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+legend {
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+.row {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.row label {
+    width: 150px;
+    padding-top: 4px;
+}
+
+.row input,
+.row select,
+.row textarea {
+    flex: 1;
+    padding: 4px;
+}
+
+.inline {
+    display: flex;
+    gap: 15px;
+}
+
+textarea {
+    height: 80px;
+}
+
+.buttons {
+    text-align: right;
+}
+
+button {
+    padding: 6px 14px;
+    margin-left: 5px;
+}
+.required {
+    color: red;
+}
+</style>
+</head>
+
+<body>
+
+<form>
+
+<!-- BASIC INFO -->
+<fieldset>
+<legend>Basic Info</legend>
+
+<div class="row">
+    <label>Employee ID <span class="required">*</span></label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Last Name</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>First Name</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Gender</label>
+    <div class="inline">
+        <label><input type="radio" name="gender"> Male</label>
+        <label><input type="radio" name="gender"> Female</label>
+        <label><input type="radio" name="gender"> XXX</label>
+        <label><input type="radio" name="gender"> ZZZ</label>
+    </div>
+</div>
+
+<div class="row">
+    <label>Title</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Suffix</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Birth Date</label>
+    <input type="datetime-local">
+</div>
+
+<div class="row">
+    <label>Hire Date</label>
+    <input type="datetime-local">
+</div>
+
+<div class="row">
+    <label>SSN #</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Reports To</label>
+    <select>
+        <option>Buchanan</option>
+        <option>Ta Chi Hieu</option>
+        <option>Vo Ta Hoang</option>
+    </select>
+</div>
+
+</fieldset>
+
+<!-- CONTACT INFO -->
+<fieldset>
+<legend>Contact Info</legend>
+
+<div class="row">
+    <label>Email</label>
+    <input type="email">
+</div>
+
+<div class="row">
+    <label>Address</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>City</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Region</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Postal Code</label>
+    <input type="text">
+</div>
+
+<div class="row">
+    <label>Country</label>
+    <select>
+        <option>Russia Federation</option>
+        <option>My</option>
+        <option>Vietnam</option>
+    </select>
+</div>
+
+<div class="row">
+    <label>US Home Phone</label>
+    <input type="text" >
+</div>
+
+<div class="row">
+    <label>Photo</label>
+    <input type="text">
+</div>
+
+</fieldset>
+
+<!-- OPTIONAL INFO -->
+<fieldset>
+<legend>Optional Info</legend>
+
+<div class="row">
+    <label>Notes</label>
+    
+</div>
+
+<div class="row">
+    <label>Preferred Shift</label>
+    <div class="inline">
+        <label><input type="checkbox" checked> Regular</label>
+        <label><input type="checkbox" checked> Grave Yard</label>
+    </div>
+</div>
+
+<div class="row">
+    <label>Active?</label>
+    <input type="checkbox" checked>
+</div>
+
+<div class="row">
+    <label>Are you human?</label>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <input type="text" placeholder="Nhập mã xác nhận">
+        <span id="captcha"
+              style="font-weight:bold; cursor:pointer; 
+                     background:#eee; padding:4px 8px;
+                     letter-spacing:2px;"
+              onclick="generateCaptcha()">
+            TIDAWO
+        </span>
+    </div>
+</div>
+
+</fieldset>
+
+<!-- BUTTONS -->
+<div class="buttons">
+   <button type="button" onclick="handleSubmit()">Submit</button>
+    <button type="reset">Cancel</button>
+</div>
+
+</form>
+<script>
+function generateCaptcha() {
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let captcha = "";
+    for (let i = 0; i < 6; i++) {
+        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById("captcha").innerText = captcha;
+}
+
+function handleSubmit() {
+    alert("Submit thành công!");
+}
+
+
+</script>
+</body>
+</html>
