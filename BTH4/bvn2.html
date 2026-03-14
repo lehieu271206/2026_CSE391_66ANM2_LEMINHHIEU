@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Multi Step Form</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f4f4;
+}
+
+.container{
+width:400px;
+margin:auto;
+margin-top:50px;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.step{
+display:none;
+}
+
+.step.active{
+display:block;
+}
+
+input,select{
+width:100%;
+padding:8px;
+margin:8px 0;
+}
+
+button{
+padding:10px 15px;
+margin-top:10px;
+cursor:pointer;
+}
+
+.buttons{
+display:flex;
+justify-content:space-between;
+}
+
+.progress{
+width:100%;
+background:#ddd;
+height:10px;
+border-radius:5px;
+margin-bottom:20px;
+}
+
+#progressBar{
+height:10px;
+background:#4CAF50;
+width:33%;
+border-radius:5px;
+transition:0.3s;
+}
+
+.error{
+color:red;
+font-size:13px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Đăng ký tài khoản</h2>
+
+<div class="progress">
+<div id="progressBar"></div>
+</div>
+
+<form id="multiForm">
+
+<!-- STEP 1 -->
+<div class="step active">
+
+<h3>Bước 1: Thông tin cá nhân</h3>
+
+<label>Họ tên</label>
+<input type="text" id="name">
+<div id="nameError" class="error"></div>
+
+<label>Ngày sinh</label>
+<input type="date" id="dob">
+<div id="dobError" class="error"></div>
+
+<label>Giới tính</label>
+<select id="gender">
+<option value="">-- Chọn --</option>
+<option>Nam</option>
+<option>Nữ</option>
+</select>
+<div id="genderError" class="error"></div>
+
+<button type="button" onclick="nextStep()">Tiếp theo</button>
+
+</div>
+
+
+<!-- STEP 2 -->
+<div class="step">
+
+<h3>Bước 2: Thông tin tài khoản</h3>
+
+<label>Email</label>
+<input type="email" id="email">
+<div id="emailError" class="error"></div>
+
+<label>Mật khẩu</label>
+<input type="password" id="password">
+<div id="passwordError" class="error"></div>
+
+<label>Xác nhận mật khẩu</label>
+<input type="password" id="confirmPassword">
+<div id="confirmError" class="error"></div>
+
+<div class="buttons">
+<button type="button" onclick="prevStep()">Quay lại</button>
+<button type="button" onclick="nextStep()">Tiếp theo</button>
+</div>
+
+</div>
+
+
+<!-- STEP 3 -->
+<div class="step">
+
+<h3>Bước 3: Xác nhận thông tin</h3>
+
+<p><b>Họ tên:</b> <span id="showName"></span></p>
+<p><b>Ngày sinh:</b> <span id="showDob"></span></p>
+<p><b>Giới tính:</b> <span id="showGender"></span></p>
+<p><b>Email:</b> <span id="showEmail"></span></p>
+
+<div class="buttons">
+<button type="button" onclick="prevStep()">Quay lại</button>
+<button type="submit">Hoàn tất</button>
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+<script>
+
+let currentStep = 0;
+
+const steps = document.querySelectorAll(".step");
+const progressBar = document.getElementById("progressBar");
+
+function showStep(index){
+
+steps.forEach(step => step.classList.remove("active"));
+steps[index].classList.add("active");
+
+progressBar.style.width = ((index+1)/steps.length)*100+"%";
+}
+
+function nextStep(){
+
+if(!validateStep()) return;
+
+if(currentStep < steps.length-1){
+currentStep++;
+
+if(currentStep === 2){
+showConfirmData();
+}
+
+showStep(currentStep);
+}
+
+}
+
+function prevStep(){
+
+if(currentStep > 0){
+currentStep--;
+showStep(currentStep);
+}
+
+}
+
+function validateStep(){
+
+let valid = true;
+
+document.querySelectorAll(".error").forEach(e => e.innerText="");
+
+if(currentStep === 0){
+
+if(!validateName()) valid=false;
+if(!validateDob()) valid=false;
+if(!validateGender()) valid=false;
+
+}
+
+if(currentStep === 1){
+
+if(!validateEmail()) valid=false;
+if(!validatePassword()) valid=false;
+if(!validateConfirm()) valid=false;
+
+}
+
+return valid;
+
+}
+
+
+function validateName(){
+
+let name = document.getElementById("name").value.trim();
+
+if(name.length < 3){
+document.getElementById("nameError").innerText="Tên phải ít nhất 3 ký tự";
+return false;
+}
+
+document.getElementById("nameError").innerText="";
+return true;
+
+}
+
+function validateDob(){
+
+const dob = document.getElementById("dob").value;
+
+if(dob === ""){
+document.getElementById("dobError").innerText="Vui lòng chọn ngày sinh";
+return false;
+}
+
+const today = new Date();
+const birthDate = new Date(dob);
+
+today.setHours(0,0,0,0);
+
+if(birthDate >= today){
+document.getElementById("dobError").innerText="Ngày sinh phải trước hôm nay";
+return false;
+}
+
+document.getElementById("dobError").innerText="";
+return true;
+
+}
+
+function validateGender(){
+
+let gender = document.getElementById("gender").value;
+
+if(gender === ""){
+document.getElementById("genderError").innerText="Vui lòng chọn giới tính";
+return false;
+}
+
+document.getElementById("genderError").innerText="";
+return true;
+
+}
+
+function validateEmail(){
+
+let email = document.getElementById("email").value;
+
+let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if(!regex.test(email)){
+document.getElementById("emailError").innerText="Email không hợp lệ";
+return false;
+}
+
+document.getElementById("emailError").innerText="";
+return true;
+
+}
+
+function validatePassword(){
+
+let password = document.getElementById("password").value;
+
+if(password.length < 6){
+document.getElementById("passwordError").innerText="Mật khẩu ít nhất 6 ký tự";
+return false;
+}
+
+document.getElementById("passwordError").innerText="";
+return true;
+
+}
+
+function validateConfirm(){
+
+let password = document.getElementById("password").value;
+let confirm = document.getElementById("confirmPassword").value;
+
+if(confirm !== password){
+document.getElementById("confirmError").innerText="Mật khẩu không khớp";
+return false;
+}
+
+document.getElementById("confirmError").innerText="";
+return true;
+
+}
+
+
+function showConfirmData(){
+
+document.getElementById("showName").innerText =
+document.getElementById("name").value;
+
+document.getElementById("showDob").innerText =
+document.getElementById("dob").value;
+
+document.getElementById("showGender").innerText =
+document.getElementById("gender").value;
+
+document.getElementById("showEmail").innerText =
+document.getElementById("email").value;
+
+}
+
+
+document.getElementById("name").addEventListener("blur",validateName);
+document.getElementById("dob").addEventListener("blur",validateDob);
+document.getElementById("gender").addEventListener("blur",validateGender);
+
+document.getElementById("email").addEventListener("blur",validateEmail);
+document.getElementById("password").addEventListener("blur",validatePassword);
+document.getElementById("confirmPassword").addEventListener("blur",validateConfirm);
+
+
+document.getElementById("dob").max =
+new Date().toISOString().split("T")[0];
+
+showStep(currentStep);
+
+</script>
+
+</body>
+</html>

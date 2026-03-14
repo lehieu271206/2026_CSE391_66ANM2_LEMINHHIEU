@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quản lý điểm sinh viên</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    margin:40px;
+}
+
+input, select, button{
+    padding:6px;
+    margin:5px;
+}
+
+table{
+    border-collapse: collapse;
+    width:700px;
+    margin-top:20px;
+}
+
+th, td{
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:center;
+}
+
+th{
+    background:#eee;
+    cursor:pointer;
+}
+
+.yeu{
+    background:yellow;
+}
+
+#noResult{
+    text-align:center;
+    color:red;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<h2>Quản lý điểm sinh viên</h2>
+
+<input id="name" placeholder="Họ tên" >
+<input id="score" type="number" placeholder="Điểm (0-10)">
+<button id="addBtn">Thêm</button>
+
+<br>
+
+<input id="search" placeholder="Tìm kiếm tên sinh viên">
+<select id="filter">
+
+<option value="all">Tất cả</option>
+<option value="Giỏi">Giỏi</option>
+<option value="Khá">Khá</option>
+<option value="Trung bình">Trung bình</option>
+<option value="Yếu">Yếu</option>
+
+</select>
+
+<table>
+
+<thead>
+
+<tr>
+<th>STT</th>
+<th>Họ tên</th>
+<th id="scoreHeader">Điểm</th>
+<th>Xếp loại</th>
+<th>Thao tác</th>
+</tr>
+
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+<p id="stat"></p>
+
+<script>
+
+let students = []
+
+let sortDirection = null
+
+function classify(score){
+
+if(score >= 8.5) return "Giỏi"
+if(score >= 7) return "Khá"
+if(score >= 5) return "Trung bình"
+return "Yếu"
+
+}
+
+function addStudent(){
+
+const nameInput = document.getElementById("name")
+const scoreInput = document.getElementById("score")
+
+const name = nameInput.value.trim()
+const score = Number(scoreInput.value)
+
+if(name === "" || isNaN(score) || score < 0 || score > 10){
+
+alert("Vui lòng nhập đúng dữ liệu")
+return
+
+}
+
+students.push({name,score})
+
+nameInput.value=""
+scoreInput.value=""
+nameInput.focus()
+
+applyFilters()
+
+}
+
+document.getElementById("addBtn").addEventListener("click",addStudent)
+
+document.getElementById("score").addEventListener("keypress",function(e){
+
+if(e.key==="Enter") addStudent()
+
+})
+
+function applyFilters(){
+
+let keyword = document.getElementById("search").value.toLowerCase()
+
+let filter = document.getElementById("filter").value
+
+let result = students.filter(sv=>{
+
+let matchName = sv.name.toLowerCase().includes(keyword)
+
+let type = classify(sv.score)
+
+let matchFilter = filter==="all" || type===filter
+
+return matchName && matchFilter
+
+})
+
+if(sortDirection){
+
+result.sort((a,b)=>{
+
+return sortDirection==="asc"
+? a.score - b.score
+: b.score - a.score
+
+})
+
+}
+
+renderTable(result)
+
+}
+
+function renderTable(data){
+
+const tbody = document.getElementById("tableBody")
+
+tbody.innerHTML=""
+
+if(data.length===0){
+
+tbody.innerHTML=`<tr><td colspan="5" id="noResult">Không có kết quả</td></tr>`
+
+updateStat(data)
+
+return
+
+}
+
+data.forEach((sv,index)=>{
+
+let tr=document.createElement("tr")
+
+if(sv.score<5) tr.classList.add("yeu")
+
+tr.innerHTML=`
+
+<td>${index+1}</td>
+<td>${sv.name}</td>
+<td>${sv.score}</td>
+<td>${classify(sv.score)}</td>
+<td>
+<button data-name="${sv.name}">Xóa</button>
+</td>
+
+`
+
+tbody.appendChild(tr)
+
+})
+
+updateStat(data)
+
+}
+
+function updateStat(data){
+
+let total=data.reduce((sum,sv)=>sum+sv.score,0)
+
+let avg=data.length ? (total/data.length).toFixed(2) : 0
+
+document.getElementById("stat").innerText=
+`Tổng sinh viên: ${data.length} | Điểm trung bình: ${avg}`
+
+}
+
+document.getElementById("search").addEventListener("input",applyFilters)
+
+document.getElementById("filter").addEventListener("change",applyFilters)
+
+document.getElementById("scoreHeader").addEventListener("click",function(){
+
+if(sortDirection===null || sortDirection==="desc")
+sortDirection="asc"
+else
+sortDirection="desc"
+
+this.innerText = sortDirection==="asc"
+? "Điểm ▲"
+: "Điểm ▼"
+
+applyFilters()
+
+})
+
+document.getElementById("tableBody").addEventListener("click",function(e){
+
+if(e.target.tagName==="BUTTON"){
+
+let name=e.target.dataset.name
+
+students=students.filter(sv=>sv.name!==name)
+
+applyFilters()
+
+}
+
+})
+
+</script>
+
+</body>
+</html>
